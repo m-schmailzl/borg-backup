@@ -1,5 +1,6 @@
 #!/bin/bash
 # sends an email to ADMIN_EMAIL
+# generates the SMTP configuration for the use case that it is called externally as entrypoint
 
 echo "Sending mail to admin..."
 
@@ -8,10 +9,31 @@ if [ "$#" -ne 2 ]; then
 	exit 1
 fi
 
+if [ -z "$ADMIN_EMAIL" ]; then
+	echo "Error: ADMIN_EMAIL is not set."
+	exit 2
+fi
+
+if [ -z "$SMTP_EMAIL" ]; then
+	echo "Error: SMTP_EMAIL is not set."
+	exit 2
+fi
+
+
+if ! [ -e "/etc/msmtprc" ]; then
+	echo "Generating SMTP configuration..."
+	if [ -z "$SMTP_USER" ]; then
+		export SMTP_USER="$SMTP_EMAIL"
+	fi
+	envsubst < "/etc/msmtprc.tpl" > "/etc/msmtprc"
+fi
+
+
 FROM="$SMTP_EMAIL"
 if [ -n "$SMTP_FROM" ]; then
 	FROM="$SMTP_FROM <$SMTP_EMAIL>"
 fi
+
 
 echo -e "From: $FROM\nTo: $ADMIN_EMAIL\nSubject: $1\n\n$2" | msmtp "$ADMIN_EMAIL"
 

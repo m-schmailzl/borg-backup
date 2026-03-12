@@ -1,0 +1,23 @@
+#!/bin/bash
+# sends an email to ADMIN_EMAIL
+
+echo "Sending mail to admin..."
+
+if [ "$#" -ne 2 ]; then
+    echo "adminmail needs two parameters: The subject and the email body."
+	exit 1
+fi
+
+FROM="$SMTP_EMAIL"
+if [ -n "$SMTP_FROM" ]; then
+	FROM="$SMTP_FROM <$SMTP_EMAIL>"
+fi
+
+echo -e "From: $FROM\nTo: $ADMIN_EMAIL\nSubject: $1\n\n$2" | msmtp "$ADMIN_EMAIL"
+
+if [ $? = 0 ]; then
+	echo "Success!"
+else
+	echo "Error: Failed to send an email to '$ADMIN_EMAIL'. Check your configuration."
+	exit 2
+fi

@@ -1,0 +1,21 @@
+#!/bin/bash
+# initializes the borg repository for the client
+
+set -e
+
+if [[ $# -ne 1 ]]; then
+    echo 'Usage: init-repo <client name>'
+    exit 1
+fi
+
+source /app/server/load-env.sh
+
+if ! [ -e "$TARGET_DIR/$1" ]; then
+	echo "Creating '$TARGET_DIR/$1'..."
+	mkdir -p "$TARGET_DIR/$1"
+fi
+
+if ! borg info "$TARGET_DIR/$1" > /dev/null 2>&1; then
+	echo "Initializing repository..."
+    borg init --encryption="$BORG_ENCRYPTION" "$TARGET_DIR/$1"
+fi

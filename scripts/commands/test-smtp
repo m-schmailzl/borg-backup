@@ -1,0 +1,14 @@
+#!/bin/bash
+# command to test the SMTP configuration
+
+if [ -z "$ADMIN_EMAIL" ]; then
+	echo "Error: ADMIN_EMAIL is not set."
+	exit 1
+fi
+
+if [ -z "$SMTP_EMAIL" ]; then
+	echo "Error: SMTP_EMAIL is not set."
+	exit 1
+fi
+
+adminmail "schmailzl/borg-backup email test" "SUCCESS!"

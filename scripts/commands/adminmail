@@ -2,10 +2,12 @@
 # sends an email to ADMIN_EMAIL
 # generates the SMTP configuration for the use case that it is called externally as entrypoint
 
-echo "Sending mail to admin..."
+body="$2$(cat)"
 
-if [ "$#" -ne 2 ]; then
-    echo "adminmail needs two parameters: The subject and the email body."
+if [ -z "$1" ] || [ -z "$body" ]; then
+    echo "Usage:"
+	echo "  adminmail <subject> <body>"
+	echo "  echo <body> | adminmail <subject>"
 	exit 1
 fi
 
@@ -35,7 +37,8 @@ if [ -n "$SMTP_FROM" ]; then
 fi
 
 
-echo -e "From: $FROM\nTo: $ADMIN_EMAIL\nSubject: $1\n\n$2" | msmtp "$ADMIN_EMAIL"
+echo "Sending mail to admin..."
+echo -e "From: $FROM\nTo: $ADMIN_EMAIL\nSubject: $1\n\n$body" | msmtp "$ADMIN_EMAIL"
 
 if [ $? = 0 ]; then
 	echo "Success!"

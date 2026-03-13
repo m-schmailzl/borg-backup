@@ -90,7 +90,7 @@ if $FAILED; then
     printf "$MSG"
     
     if [ -n "$ADMIN_EMAIL" ]; then
-        adminmail "Backup of '$CLIENT_NAME' failed!" "$MSG"
+        echo "$MSG" | adminmail "Backup of '$CLIENT_NAME' failed!"
     fi
 
     exit 2

@@ -49,6 +49,14 @@ if ! $FAILED; then
         export BORG_RSH="ssh -p $BACKUP_PORT -i "$SSH_KEYFILE" $SSH_PARAMS"
     fi
 
+    excludes=("-e" "*.sock")
+    if [ -n "$BORG_EXCLUDE" ]; then
+        BORG_EXCLUDE=$(echo "$BORG_EXCLUDE" | tr -d '\r' | tr '|' '\n')
+        while IFS= read -r pattern; do
+            [ -n "$pattern" ] && excludes+=("-e" "$pattern")
+        done <<< "$BORG_EXCLUDE"
+    fi
+
     cd "${BACKUP_DIR}"
     set -o pipefail
     exec 3>&1
@@ -58,7 +66,9 @@ if ! $FAILED; then
             --compression "$BORG_COMPRESSION" \
             --upload-ratelimit "$BORG_UPLOAD_LIMIT" \
             --checkpoint-interval "$BORG_CHECKPOINT_INTERVAL" \
+            $BORG_DEFAULT_PARAMS \
             $BORG_PARAMS \
+            "${excludes[@]}" \
             "::${BACKUP_PREFIX}$(date +%Y-%m-%dT%H:%M:%S)${BACKUP_SUFFIX}" \
             . \
             2>&1 | tee /dev/fd/3

@@ -71,6 +71,10 @@ This image is WIP, come back later!
 
 * `BORG_CHECKPOINT_INTERVAL`
 
+* `BORG_EXCLUDE`
+
+* `BORG_DEFAULT_PARAMS`
+
 * `BORG_PARAMS`
 
 

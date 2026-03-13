@@ -23,7 +23,7 @@ ENV TARGET_DIR="/media/backups" \
 	BORG_COMPRESSION="lz4" \
 	BORG_UPLOAD_LIMIT=0 \
 	BORG_CHECKPOINT_INTERVAL=0 \
-	BORG_PARAMS="--verbose --list --filter=AMCE --stats --exclude-caches -e '*.sock'" \
+	BORG_DEFAULT_PARAMS="--verbose --list --filter=AMCE --stats --exclude-caches" \
 	SMTP_FROM="borg-backup" \
 	SMTP_PORT=587 \
 	SMTP_TLS="on" \

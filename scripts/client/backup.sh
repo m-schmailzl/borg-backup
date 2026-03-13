@@ -9,7 +9,7 @@ error () {
 
 MSG="The backup of $CLIENT_NAME failed:\n"
 FAILED=false
-shutdown_containers=()
+stopped_containers=()
 
 echo "-----------------------------------------------------------------------------"
 echo "Started backup on $(date)"
@@ -80,7 +80,7 @@ fi
 
 if [ -n "$stopped_containers" ]; then
 	echo "Starting containers which have been stopped for the backup..."
-    for container in $stopped_containers; do
+    for container in "${stopped_containers[@]}"; do
     	docker start "$container"
 	done
 fi

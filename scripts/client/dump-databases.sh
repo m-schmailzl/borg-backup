@@ -88,7 +88,7 @@ for container in $db_containers; do
         docker exec "$container" pg_dumpall -U "$user" -w > "$container_name.bak"
         exit_code=$?
     elif [ "$method" = "stop" ]; then
-        stopped_containers[${#stopped_containers[@]}]=$container
+        stopped_containers+=("$container")
         echo "Stopping container '$container_name'..."
         docker stop "$container"
     elif [ "$method" = "command" ]; then

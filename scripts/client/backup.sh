@@ -78,7 +78,7 @@ if ! $FAILED; then
     echo
     set +o pipefail
 
-    if [ "$borg_exit" == 0 ]; then
+    if [ "$borg_exit" -lt 2 ]; then
         echo
         echo "--- backup stats:"
         borg info --json --last 1 | jq '.archives[0] | {start, end, duration, stats}'
@@ -104,6 +104,8 @@ if $FAILED; then
     fi
 
     exit 2
+elif [ "$borg_exit" = 1 ]; then
+    echo "Backup finished with warnings."
 else
     echo "Backup finished without errors."
 fi

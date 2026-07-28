@@ -47,7 +47,7 @@ for container in $db_containers; do
     
 
     if [ "$method" = "volume" ]; then
-        volumes=$(docker inspect -f '{{ range .Mounts }}{{ if eq .Type "volume" }}{{ .Name }}{{ println }}{{ end }}{{ end }}' "$container_name")
+        volumes=$(docker inspect -f '{{ range .Mounts }}{{ if eq .Type "volume" }}{{ println .Name }}{{ end }}{{ end }}' "$container_name")
         
         if [ -z "$volumes" ]; then
             error "Error ($container_name): You chose the database backup method '$method' but the container has no named volumes."
@@ -55,25 +55,33 @@ for container in $db_containers; do
         fi
 
         # backup the volume with rsync
-        for volume in "$volumes"; do
+        while IFS= read -r volume; do
+            if [ -z "$volume" ]; then
+                continue
+            fi
+
             if ! [ -d "$VOLUME_DIR/$volume" ]; then
                 error "Error ($container_name): You chose the database backup method '$method' but the volume '$volume' could not be found. Make sure it is mounted to '$VOLUME_DIR/$volume'."
             else
                 rsync -a -q -l "$VOLUME_DIR/$volume" .
                 if [ $? != 0 ]; then exit_code=100; fi
             fi
-        done
+        done <<< "$volumes"
 
         docker stop "$container"
         if [ $? != 0 ]; then exit_code=100; fi
 
         # backup the volume again after stopping the container
-        for volume in "$volumes"; do
+        while IFS= read -r volume; do
+            if [ -z "$volume" ]; then
+                continue
+            fi
+
             if [ -d "$VOLUME_DIR/$volume" ]; then
                 rsync -a -q -l "$VOLUME_DIR/$volume" .
                 if [ $? != 0 ]; then exit_code=100; fi
             fi
-        done
+        done <<< "$volumes"
 
         docker start "$container"
         if [ $? != 0 ]; then exit_code=100; fi

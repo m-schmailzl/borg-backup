@@ -63,7 +63,7 @@ for container in $db_containers; do
             if ! [ -d "$VOLUME_DIR/$volume" ]; then
                 error "Error ($container_name): You chose the database backup method '$method' but the volume '$volume' could not be found. Make sure it is mounted to '$VOLUME_DIR/$volume'."
             else
-                rsync -a -q -l "$VOLUME_DIR/$volume" .
+                rsync -aql --numeric-ids --checksum "$VOLUME_DIR/$volume" .
                 if [ $? != 0 ]; then exit_code=100; fi
             fi
         done <<< "$volumes"
@@ -78,7 +78,7 @@ for container in $db_containers; do
             fi
 
             if [ -d "$VOLUME_DIR/$volume" ]; then
-                rsync -a -q -l "$VOLUME_DIR/$volume" .
+                rsync -aql --numeric-ids --checksum "$VOLUME_DIR/$volume" .
                 if [ $? != 0 ]; then exit_code=100; fi
             fi
         done <<< "$volumes"
